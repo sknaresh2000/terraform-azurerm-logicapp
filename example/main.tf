@@ -13,7 +13,7 @@ module "logicapp" {
   source                                = "../"
   logic_app_name                        = var.logicapp_name
   sa_name                               = var.sa_name
-  service_plan_name                     = var.sp_name
+  service_plan_name                     = var.service_plan_name
   la_name                               = var.la_name
   app_insights_name                     = var.app_insights_name
   tags                                  = module.tags.tags

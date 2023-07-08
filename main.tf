@@ -54,7 +54,7 @@ resource "azurerm_private_endpoint" "pe" {
   resource_group_name = var.rg_name
   subnet_id           = var.private_endpoint_subnet_id
   private_service_connection {
-    name                           = format("%s-%s", var.name, "private-service-connection")
+    name                           = format("%s-%s", var.sa_name, "private-service-connection")
     private_connection_resource_id = azurerm_storage_account.sa[0].id
     is_manual_connection           = var.is_manual_connection
     subresource_names              = var.private_endpoint_sa_subresource_names
@@ -83,5 +83,5 @@ resource "azurerm_application_insights" "logicapp_appinsights" {
   location            = var.location
   resource_group_name = var.rg_name
   application_type    = "web"
-  workspace_id        = var.use_existing_la ? var.workspace_id : azurerm_log_analytics_workspace.logicapp_logs.id
+  workspace_id        = var.use_existing_la ? var.workspace_id : azurerm_log_analytics_workspace.logicapp_logs[0].id
 }
