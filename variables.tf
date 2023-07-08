@@ -56,7 +56,7 @@ variable "rg_name" {
 
 variable "sa_name" {
   type        = string
-  description = "The name of the storage account to create"
+  description = "The name of the storage account to create if use_existing_storage_account is set to false. If its true, provide the name of the existing storage account to be linked with logic app standard."
 }
 
 variable "sa_key" {

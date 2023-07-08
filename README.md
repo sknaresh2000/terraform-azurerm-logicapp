@@ -46,7 +46,7 @@ No modules.
 | <a name="input_public_network_access_enabled"></a> [public\_network\_access\_enabled](#input\_public\_network\_access\_enabled) | Whether the public network access is enabled? | `bool` | `false` | no |
 | <a name="input_rg_name"></a> [rg\_name](#input\_rg\_name) | The name of the resource group where the resources should be created | `string` | n/a | yes |
 | <a name="input_sa_key"></a> [sa\_key](#input\_sa\_key) | The access key which will be used to access the backend storage account for the Logic App | `string` | `null` | no |
-| <a name="input_sa_name"></a> [sa\_name](#input\_sa\_name) | The name of the storage account to create | `string` | n/a | yes |
+| <a name="input_sa_name"></a> [sa\_name](#input\_sa\_name) | The name of the storage account to create if use\_existing\_storage\_account is set to false. If its true, provide the name of the existing storage account to be linked with logic app standard. | `string` | n/a | yes |
 | <a name="input_service_plan_name"></a> [service\_plan\_name](#input\_service\_plan\_name) | The name which should be used for this Service Plan. | `string` | n/a | yes |
 | <a name="input_service_plan_ostype"></a> [service\_plan\_ostype](#input\_service\_plan\_ostype) | The O/S type for the App Services to be hosted in this plan. | `string` | `"Windows"` | no |
 | <a name="input_service_plan_sku"></a> [service\_plan\_sku](#input\_service\_plan\_sku) | The SKU for the plan. Possible values for logic app include WS1, WS2, WS3 | `string` | `"WS1"` | no |
