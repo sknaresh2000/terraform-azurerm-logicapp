@@ -1,0 +1,26 @@
+name: 'Terraform Module Workflow'
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    uses: sknaresh2000/templates/.github/workflows/tf-ci.yml@main
+    secrets: inherit
+  deploy:
+    needs: build
+    uses: sknaresh2000/templates/.github/workflows/tf-cd.yml@main
+    secrets: inherit
