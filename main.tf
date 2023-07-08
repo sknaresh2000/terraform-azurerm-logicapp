@@ -15,7 +15,6 @@ resource "azurerm_logic_app_standard" "logicapp-standard" {
   storage_account_name       = var.use_existing_storage_account ? var.sa_name : azurerm_storage_account.sa[0].id
   storage_account_access_key = var.use_existing_storage_account ? var.sa_key : azurerm_storage_account.sa[0].primary_access_key
   https_only                 = true
-  min_tls_version            = "1.2"
 }
 
 resource "azurerm_storage_account" "sa" {
