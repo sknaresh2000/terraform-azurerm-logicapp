@@ -34,6 +34,12 @@ variable "resource_group_name" {
   default     = "rg-logicapp-module"
 }
 
+variable "app_name" {
+  type        = string
+  description = "Name of the application for which the resources are being created"
+  default     = "logicapp-module"
+}
+
 variable "vnet_address_prefix" {
   type        = string
   description = "The address prefix that will be used for the creation of VNET"
