@@ -12,8 +12,8 @@ resource "azurerm_logic_app_standard" "logicapp-standard" {
   location                   = var.location
   resource_group_name        = var.rg_name
   app_service_plan_id        = azurerm_service_plan.logicapp-plan.id
-  storage_account_name       = var.use_existing_storage_account ? var.sa_name : azurerm_storage_account.sa.id
-  storage_account_access_key = var.use_existing_storage_account ? var.sa_key : azurerm_storage_account.sa.primary_access_key
+  storage_account_name       = var.use_existing_storage_account ? var.sa_name : azurerm_storage_account.sa[0].id
+  storage_account_access_key = var.use_existing_storage_account ? var.sa_key : azurerm_storage_account.sa[0].primary_access_key
   https_only                 = true
   min_tls_version            = "1.2"
 }
