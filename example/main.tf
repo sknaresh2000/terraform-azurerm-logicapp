@@ -32,7 +32,7 @@ module "virtual_network" {
 }
 
 module "subnet" {
-  source             = "git::https://github.com/sknaresh2000/terraform-azurerm-subnets.git?ref=v0.0.1"
+  source             = "git::https://github.com/sknaresh2000/terraform-azurerm-subnets.git?ref=dev"
   for_each           = var.subnet_prefixes
   address_prefix     = each.value.address_prefix
   name               = each.key
