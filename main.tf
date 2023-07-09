@@ -63,8 +63,14 @@ resource "azurerm_storage_account" "sa" {
   }
 }
 
+resource "azurerm_storage_share" "logic_app_storage_account_share" {
+  name                 = "${var.logic_app_name}-content"
+  storage_account_name = var.use_existing_storage_account ? var.sa_name : azurerm_storage_account.sa[0].name
+  quota                = "5000"
+}
+
 resource "azurerm_private_endpoint" "sa_pe" {
-  for_each            = var.use_existing_storage_account ? {} : { for k, v in var.private_dns_zone_info : k => v if k != "sites" }
+  for_each            = var.use_existing_storage_account ? {} : var.sa_private_dns_zone_info
   name                = format("%s-%s-%s", var.sa_name, each.key, "private-endpoint")
   location            = var.location
   resource_group_name = var.rg_name
@@ -93,12 +99,9 @@ resource "azurerm_private_endpoint" "logicapp_pe" {
     is_manual_connection           = var.is_manual_connection
     subresource_names              = ["sites"]
   }
-  dynamic "private_dns_zone_group" {
-    for_each = var.private_dns_zone_info != null ? [1] : []
-    content {
-      name                 = var.private_dns_zone_info["sites"].dns_zone_name
-      private_dns_zone_ids = var.private_dns_zone_info["sites"].dns_zone_ids
-    }
+  private_dns_zone_group {
+    name                 = var.logicapp_private_dns_zone_info.dns_zone_name
+    private_dns_zone_ids = var.logicapp_private_dns_zone_info.dns_zone_ids
   }
 }
 
