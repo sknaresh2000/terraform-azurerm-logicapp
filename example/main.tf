@@ -10,16 +10,17 @@ module "tags" {
 }
 
 module "logicapp" {
-  source                                = "../"
-  logic_app_name                        = var.logicapp_name
-  sa_name                               = var.sa_name
-  service_plan_name                     = var.service_plan_name
-  la_name                               = var.la_name
-  app_insights_name                     = var.app_insights_name
-  tags                                  = module.tags.tags
-  rg_name                               = module.rg.name
-  private_endpoint_subnet_id            = module.subnet.id
-  private_endpoint_sa_subresource_names = ["blob"]
+  source                     = "../"
+  logic_app_name             = var.logicapp_name
+  sa_name                    = var.sa_name
+  service_plan_name          = var.service_plan_name
+  la_name                    = var.la_name
+  app_insights_name          = var.app_insights_name
+  tags                       = module.tags.tags
+  rg_name                    = module.rg.name
+  private_endpoint_subnet_id = module.subnet["pe"].id
+  logic_app_subnet_id        = module.subnet["logicapp"].id
+  private_dns_zone_info      = { for k, v in local.private_dns_zone_info : k => merge(v, { dns_zone_ids = [azurerm_private_dns_zone.private_dns_zone[k].id] }) }
 }
 
 module "virtual_network" {
@@ -32,11 +33,40 @@ module "virtual_network" {
 
 module "subnet" {
   source         = "git::https://github.com/sknaresh2000/terraform-azurerm-subnets.git?ref=v0.0.1"
-  address_prefix = var.subnet_address_prefix
-  name           = var.subnet_name
-  nsg_name       = var.nsg_name
+  for_each       = var.subnet_prefixes
+  address_prefix = each.value.address_prefix
+  name           = each.key
+  nsg_name       = each.value.nsg_name
   nsg_rg_name    = module.rg.name
   tags           = module.tags.tags
   vnet_name      = module.virtual_network.name
   vnet_rg_name   = module.rg.name
+}
+
+resource "azurerm_private_dns_zone" "private_dns_zone" {
+  for_each            = local.private_dns_zone_info
+  name                = each.value.dns_zone_name
+  resource_group_name = module.rg.name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
+  for_each              = local.private_dns_zone_info
+  name                  = "vnet-${each.key}-link"
+  resource_group_name   = module.rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone[each.key].name
+  virtual_network_id    = module.virtual_network.id
+}
+
+locals {
+  private_dns_zone_info = {
+    blob = {
+      dns_zone_name = "privatelink.blob.core.windows.net"
+    }
+    file = {
+      dns_zone_name = "privatelink.file.core.windows.net"
+    }
+    sites = {
+      dns_zone_name = "privatelink.azurewebsites.net"
+    }
+  }
 }

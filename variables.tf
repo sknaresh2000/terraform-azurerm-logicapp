@@ -132,7 +132,17 @@ variable "blob_versioning_enabled" {
 variable "private_endpoint_subnet_id" {
   type        = string
   description = "Details of the subnet id where the private endpoint needs to be configured"
+}
+
+variable "sa_id" {
+  type        = string
+  description = "Id of the storage account if existing account is being used"
   default     = null
+}
+
+variable "logic_app_subnet_id" {
+  type        = string
+  description = "Details of the subnet id where the logic app will be integrated into the VNET"
 }
 
 variable "is_manual_connection" {
@@ -141,25 +151,10 @@ variable "is_manual_connection" {
   default     = false
 }
 
-variable "private_endpoint_sa_subresource_names" {
-  type        = list(string)
-  description = "A list of subresource names which the Private Endpoint is able to connect to."
-  default     = null
-}
-
-variable "container_info" {
-  type = map(object({
-    access_type = string
-  }))
-  description = "Details about the containers that needs to be created"
-  default     = {}
-}
-
 variable "private_dns_zone_info" {
-  type = object({
+  type = map(object({
     dns_zone_name = string
     dns_zone_ids  = list(string)
-  })
-  description = "Details about DNS zones"
-  default     = null
+  }))
+  description = "Details about DNS zones to be created for logic app and storage account if existing account isnt being used. The key should be named as 'sites' for logic app"
 }

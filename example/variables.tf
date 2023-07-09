@@ -52,20 +52,30 @@ variable "vnet_name" {
   default     = "vnet-logicapp"
 }
 
-variable "subnet_address_prefix" {
-  type        = string
-  description = "The address prefix of the subnet that will be created"
-  default     = "10.0.30.0/26"
-}
-
-variable "subnet_name" {
-  type        = string
-  description = "The name of the Vault subnet"
-  default     = "subnet-logicapp-eus"
-}
-
-variable "nsg_name" {
-  type        = string
-  description = "The name of the NSG that will be created"
-  default     = "nsg-logicapp-eus"
+variable "subnet_prefixes" {
+  type = map(object({
+    subnet_name    = string
+    address_prefix = string
+    nsg_name       = string
+  }))
+  description = "Details of the subnets that is required to be created"
+  default = {
+    pe = {
+      subnet_name        = "subnet-sa-eus"
+      address_prefix     = "10.0.30.64/26"
+      nsg_name           = "nsg-sa-eus"
+      delegation_details = null
+    }
+    logicapp = {
+      subnet_name    = "subnet-logicapp-eus"
+      address_prefix = "10.0.30.0/26"
+      nsg_name       = "nsg-logicapp-eus"
+      delegation_details = {
+        serverFarms = {
+          service_name = "Microsoft.Web/serverFarms"
+          actions      = ["Microsoft.Network/virtualNetworks/subnets/action"]
+        }
+      }
+    }
+  }
 }
