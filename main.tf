@@ -13,12 +13,15 @@ resource "azurerm_logic_app_standard" "logicapp-standard" {
   resource_group_name        = var.rg_name
   app_service_plan_id        = azurerm_service_plan.logicapp-plan.id
   storage_account_name       = var.sa_name
+  virtual_network_subnet_id  = var.logic_app_subnet_id
   storage_account_access_key = var.use_existing_storage_account ? var.sa_key : azurerm_storage_account.sa[0].primary_access_key
   https_only                 = true
   app_settings = {
-    "WEBSITE_CONTENTOVERVNET" : "1"
-    "FUNCTIONS_WORKER_RUNTIME" : "node"
-    "WEBSITE_NODE_DEFAULT_VERSION" : "~14"
+    "WEBSITE_CONTENTOVERVNET"               = "1"
+    "FUNCTIONS_WORKER_RUNTIME"              = "node"
+    "WEBSITE_NODE_DEFAULT_VERSION"          = "~14"
+    "APPINSIGHTS_INSTRUMENTATIONKEY"        = azurerm_application_insights.logicapp_appinsights.instrumentation_key
+    "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.logicapp_appinsights.connection_string
   }
 
   site_config {
