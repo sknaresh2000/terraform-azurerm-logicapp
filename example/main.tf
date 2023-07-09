@@ -20,8 +20,8 @@ module "logicapp" {
   rg_name                        = module.rg.name
   private_endpoint_subnet_id     = module.subnet["pe"].id
   logic_app_subnet_id            = module.subnet["logicapp"].id
-  sa_private_dns_zone_info       = local.sa_private_dns_zone_info
-  logicapp_private_dns_zone_info = local.logicapp_private_dns_zone_info.sites
+  sa_private_dns_zone_info       = { for k, v in local.sa_private_dns_zone_info : k => merge(v, { dns_zone_ids = [azurerm_private_dns_zone.private_dns_zone[k].id] }) }
+  logicapp_private_dns_zone_info = { for k, v in local.logicapp_private_dns_zone_info : k => merge(v, { dns_zone_ids = [azurerm_private_dns_zone.private_dns_zone[k].id] }) }
 }
 
 module "virtual_network" {
@@ -46,13 +46,13 @@ module "subnet" {
 }
 
 resource "azurerm_private_dns_zone" "private_dns_zone" {
-  for_each            = merge(local.sa_private_dns_zone_info, logicapp_private_dns_zone_info)
+  for_each            = merge(local.sa_private_dns_zone_info, local.logicapp_private_dns_zone_info)
   name                = each.value.dns_zone_name
   resource_group_name = module.rg.name
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
-  for_each              = merge(local.sa_private_dns_zone_info, logicapp_private_dns_zone_info)
+  for_each              = merge(local.sa_private_dns_zone_info, local.logicapp_private_dns_zone_info)
   name                  = "vnet-${each.key}-link"
   resource_group_name   = module.rg.name
   private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone[each.key].name
