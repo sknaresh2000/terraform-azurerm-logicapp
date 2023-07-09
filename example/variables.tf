@@ -57,6 +57,11 @@ variable "subnet_prefixes" {
     subnet_name    = string
     address_prefix = string
     nsg_name       = string
+    delegation_details = object({
+      delegation_name = string
+      service_name    = string
+      actions         = list(string)
+    })
   }))
   description = "Details of the subnets that is required to be created"
   default = {
@@ -71,10 +76,9 @@ variable "subnet_prefixes" {
       address_prefix = "10.0.30.0/26"
       nsg_name       = "nsg-logicapp-eus"
       delegation_details = {
-        serverFarms = {
-          service_name = "Microsoft.Web/serverFarms"
-          actions      = ["Microsoft.Network/virtualNetworks/subnets/action"]
-        }
+        delegation_name = "serverFarms"
+        service_name    = "Microsoft.Web/serverFarms"
+        actions         = ["Microsoft.Network/virtualNetworks/subnets/action"]
       }
     }
   }
