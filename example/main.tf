@@ -21,7 +21,7 @@ module "logicapp" {
   private_endpoint_subnet_id     = module.subnet["pe"].id
   logic_app_subnet_id            = module.subnet["logicapp"].id
   sa_private_dns_zone_info       = { for k, v in local.sa_private_dns_zone_info : k => merge(v, { dns_zone_ids = [azurerm_private_dns_zone.private_dns_zone[k].id] }) }
-  logicapp_private_dns_zone_info = { for k, v in local.logicapp_private_dns_zone_info : k => merge(v, { dns_zone_ids = [azurerm_private_dns_zone.private_dns_zone[k].id] }) }
+  logicapp_private_dns_zone_info = { for k, v in local.logicapp_private_dns_zone_info : k => merge(v, { dns_zone_ids = [azurerm_private_dns_zone.private_dns_zone[k].id] }) }.sites
 }
 
 module "virtual_network" {

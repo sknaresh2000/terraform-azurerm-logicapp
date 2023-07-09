@@ -160,9 +160,9 @@ variable "sa_private_dns_zone_info" {
 }
 
 variable "logicapp_private_dns_zone_info" {
-  type = map(object({
+  type = object({
     dns_zone_name = string
     dns_zone_ids  = list(string)
-  }))
+  })
   description = "Details about DNS zones to be created for logic app"
 }

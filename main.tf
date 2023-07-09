@@ -64,7 +64,7 @@ resource "azurerm_storage_account" "sa" {
 }
 
 resource "azurerm_storage_share" "logic_app_storage_account_share" {
-  name                 = "${var.logicapp_name}-content"
+  name                 = "${var.logic_app_name}-content"
   storage_account_name = var.use_existing_storage_account ? var.sa_name : azurerm_storage_account.sa[0].name
   quota                = "5000"
 }
