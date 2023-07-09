@@ -32,15 +32,16 @@ module "virtual_network" {
 }
 
 module "subnet" {
-  source         = "git::https://github.com/sknaresh2000/terraform-azurerm-subnets.git?ref=v0.0.1"
-  for_each       = var.subnet_prefixes
-  address_prefix = each.value.address_prefix
-  name           = each.key
-  nsg_name       = each.value.nsg_name
-  nsg_rg_name    = module.rg.name
-  tags           = module.tags.tags
-  vnet_name      = module.virtual_network.name
-  vnet_rg_name   = module.rg.name
+  source             = "git::https://github.com/sknaresh2000/terraform-azurerm-subnets.git?ref=v0.0.1"
+  for_each           = var.subnet_prefixes
+  address_prefix     = each.value.address_prefix
+  name               = each.key
+  nsg_name           = each.value.nsg_name
+  nsg_rg_name        = module.rg.name
+  tags               = module.tags.tags
+  vnet_name          = module.virtual_network.name
+  vnet_rg_name       = module.rg.name
+  delegation_details = each.value.delegation_details
 }
 
 resource "azurerm_private_dns_zone" "private_dns_zone" {
