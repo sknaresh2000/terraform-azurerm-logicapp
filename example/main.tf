@@ -65,12 +65,6 @@ locals {
     file = {
       dns_zone_name = "privatelink.file.core.windows.net"
     }
-    queue = {
-      dns_zone_name = "privatelink.queue.core.windows.net"
-    }
-    table = {
-      dns_zone_name = "privatelink.table.core.windows.net"
-    }
     sites = {
       dns_zone_name = "privatelink.azurewebsites.net"
     }
