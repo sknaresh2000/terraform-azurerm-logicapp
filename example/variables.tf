@@ -57,6 +57,10 @@ variable "subnet_prefixes" {
     subnet_name    = string
     address_prefix = string
     nsg_name       = string
+    delegation_details = map(object({
+      service_name = string
+      actions      = list(string)
+    }))
   }))
   description = "Details of the subnets that is required to be created"
   default = {
