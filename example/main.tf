@@ -57,7 +57,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
   virtual_network_id    = module.virtual_network.id
 }
 
-local = {
+locals {
   private_dns_zone_info = {
     blob = {
       dns_zone_name = "privatelink.blob.core.windows.net"
