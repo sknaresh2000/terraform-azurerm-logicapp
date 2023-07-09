@@ -15,6 +15,20 @@ resource "azurerm_logic_app_standard" "logicapp-standard" {
   storage_account_name       = var.sa_name
   storage_account_access_key = var.use_existing_storage_account ? var.sa_key : azurerm_storage_account.sa[0].primary_access_key
   https_only                 = true
+  app_settings = {
+    "WEBSITE_CONTENTOVERVNET" : "1"
+    "FUNCTIONS_WORKER_RUNTIME" : "node"
+    "WEBSITE_NODE_DEFAULT_VERSION" : "~14"
+  }
+
+  site_config {
+    use_32_bit_worker_process        = true
+    ftps_state                       = "Disabled"
+    websockets_enabled               = false
+    min_tls_version                  = "1.2"
+    runtime_scale_monitoring_enabled = false
+    vnet_route_all_enabled           = true
+  }
 }
 
 resource "azurerm_storage_account" "sa" {
@@ -46,24 +60,41 @@ resource "azurerm_storage_account" "sa" {
   }
 }
 
-resource "azurerm_private_endpoint" "pe" {
-  count               = var.use_existing_storage_account ? 0 : 1
-  name                = format("%s-%s", var.sa_name, "private-endpoint")
+resource "azurerm_private_endpoint" "sa_pe" {
+  for_each            = var.use_existing_storage_account ? {} : { for k, v in var.private_dns_zone_info : k => v if !contains(k, "sites") }
+  name                = format("%s-%s-%s", var.sa_name, each.key, "private-endpoint")
   location            = var.location
   resource_group_name = var.rg_name
   subnet_id           = var.private_endpoint_subnet_id
   private_service_connection {
-    name                           = format("%s-%s", var.sa_name, "private-service-connection")
-    private_connection_resource_id = azurerm_storage_account.sa[0].id
+    name                           = format("%s-%s-%s", var.sa_name, each.key, "private-service-connection")
+    private_connection_resource_id = var.use_existing_storage_account ? var.sa_id : azurerm_storage_account.sa[0].id
     is_manual_connection           = var.is_manual_connection
-    subresource_names              = var.private_endpoint_sa_subresource_names
+    subresource_names              = [each.key]
   }
 
+  private_dns_zone_group {
+    name                 = each.value.dns_zone_name
+    private_dns_zone_ids = each.value.dns_zone_ids
+  }
+}
+
+resource "azurerm_private_endpoint" "logicapp_pe" {
+  name                = format("%s-%s", var.logic_app_name, "private-endpoint")
+  location            = var.location
+  resource_group_name = var.rg_name
+  subnet_id           = var.private_endpoint_subnet_id
+  private_service_connection {
+    name                           = format("%s-%s", var.logic_app_name, "private-service-connection")
+    private_connection_resource_id = azurerm_logic_app_standard.logicapp-standard.id
+    is_manual_connection           = var.is_manual_connection
+    subresource_names              = ["sites"]
+  }
   dynamic "private_dns_zone_group" {
     for_each = var.private_dns_zone_info != null ? [1] : []
     content {
-      name                 = var.private_dns_zone_info.dns_zone_name
-      private_dns_zone_ids = var.private_dns_zone_info.dns_zone_ids
+      name                 = var.private_dns_zone_info["sites"].dns_zone_name
+      private_dns_zone_ids = var.private_dns_zone_info["sites"].dns_zone_ids
     }
   }
 }
