@@ -151,10 +151,18 @@ variable "is_manual_connection" {
   default     = false
 }
 
-variable "private_dns_zone_info" {
+variable "sa_private_dns_zone_info" {
   type = map(object({
     dns_zone_name = string
     dns_zone_ids  = list(string)
   }))
-  description = "Details about DNS zones to be created for logic app and storage account if existing account isnt being used. The key should be named as 'sites' for logic app"
+  description = "Details about DNS zones to be created for storage account if existing account isnt being used."
+}
+
+variable "logicapp_private_dns_zone_info" {
+  type = object({
+    dns_zone_name = string
+    dns_zone_ids  = list(string)
+  })
+  description = "Details about DNS zones to be created for logic app"
 }
