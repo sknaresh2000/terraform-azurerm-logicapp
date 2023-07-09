@@ -1,3 +1,7 @@
+data "http" "ip" {
+  url = "https://ifconfig.me/ip"
+}
+
 module "rg" {
   source = "git::https://github.com/sknaresh2000/terraform-azurerm-resource-group.git?ref=v0.0.1"
   name   = var.resource_group_name
@@ -22,6 +26,8 @@ module "logicapp" {
   logic_app_subnet_id            = module.subnet["logicapp"].id
   sa_private_dns_zone_info       = { for k, v in local.sa_private_dns_zone_info : k => merge(v, { dns_zone_ids = [azurerm_private_dns_zone.private_dns_zone[k].id] }) }
   logicapp_private_dns_zone_info = { for k, v in local.logicapp_private_dns_zone_info : k => merge(v, { dns_zone_ids = [azurerm_private_dns_zone.private_dns_zone[k].id] }) }.sites
+  public_network_access_enabled  = true
+  network_acls                   = local.network_acls
 }
 
 module "virtual_network" {
@@ -78,5 +84,11 @@ locals {
     sites = {
       dns_zone_name = "privatelink.azurewebsites.net"
     }
+  }
+  network_acls = {
+    bypass_services_info        = ["None"]
+    default_action              = "Deny"
+    allowed_ips                 = [data.http.ip.response_body]
+    service_endpoint_subnet_ids = null
   }
 }
