@@ -61,7 +61,7 @@ resource "azurerm_storage_account" "sa" {
 }
 
 resource "azurerm_private_endpoint" "sa_pe" {
-  for_each            = var.use_existing_storage_account ? {} : { for k, v in var.private_dns_zone_info : k => v if !contains(k, "sites") }
+  for_each            = var.use_existing_storage_account ? {} : { for k, v in var.private_dns_zone_info : k => v if k != "sites" }
   name                = format("%s-%s-%s", var.sa_name, each.key, "private-endpoint")
   location            = var.location
   resource_group_name = var.rg_name
