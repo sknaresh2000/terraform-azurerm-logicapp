@@ -62,6 +62,20 @@ variable "subnet_prefixes" {
       service_name    = string
       actions         = list(string)
     })
+    nsgrules = map(object({
+      priority                     = number
+      direction                    = string
+      access                       = string
+      protocol                     = string
+      source_port_range            = string
+      destination_port_range       = string
+      source_port_ranges           = list(string)
+      destination_port_ranges      = list(string)
+      source_address_prefix        = string
+      destination_address_prefix   = string
+      source_address_prefixes      = list(string)
+      destination_address_prefixes = list(string)
+    }))
   }))
   description = "Details of the subnets that is required to be created"
   default = {
@@ -70,6 +84,36 @@ variable "subnet_prefixes" {
       address_prefix     = "10.0.30.64/26"
       nsg_name           = "nsg-sa-eus"
       delegation_details = null
+      nsgrules = {
+        "Https-In" = {
+          priority                     = 210
+          direction                    = "Inbound"
+          access                       = "Allow"
+          protocol                     = "Tcp"
+          source_port_range            = "*"
+          destination_port_range       = "443"
+          source_port_ranges           = null
+          destination_port_ranges      = null
+          source_address_prefix        = "10.0.30.0/26"
+          destination_address_prefix   = "10.0.30.64/26"
+          source_address_prefixes      = null
+          destination_address_prefixes = null
+        }
+        "Smb-In" = {
+          priority                     = 220
+          direction                    = "Inbound"
+          access                       = "Allow"
+          protocol                     = "Tcp"
+          source_port_range            = "*"
+          destination_port_range       = "445"
+          source_port_ranges           = null
+          destination_port_ranges      = null
+          source_address_prefix        = "10.0.30.0/26"
+          destination_address_prefix   = "10.0.30.64/26"
+          source_address_prefixes      = null
+          destination_address_prefixes = null
+        }
+      }
     }
     logicapp = {
       subnet_name    = "subnet-logicapp-eus"
@@ -79,6 +123,36 @@ variable "subnet_prefixes" {
         delegation_name = "serverFarms"
         service_name    = "Microsoft.Web/serverFarms"
         actions         = ["Microsoft.Network/virtualNetworks/subnets/action"]
+      }
+      nsgrules = {
+        "Https-Out" = {
+          priority                     = 210
+          direction                    = "Outbound"
+          access                       = "Allow"
+          protocol                     = "Tcp"
+          source_port_range            = "*"
+          destination_port_range       = "443"
+          source_port_ranges           = null
+          destination_port_ranges      = null
+          source_address_prefix        = "10.0.30.0/26"
+          destination_address_prefix   = "10.0.30.64/26"
+          source_address_prefixes      = null
+          destination_address_prefixes = null
+        }
+        "Smb-Out" = {
+          priority                     = 220
+          direction                    = "Outbound"
+          access                       = "Allow"
+          protocol                     = "Tcp"
+          source_port_range            = "*"
+          destination_port_range       = "445"
+          source_port_ranges           = null
+          destination_port_ranges      = null
+          source_address_prefix        = "10.0.30.0/26"
+          destination_address_prefix   = "10.0.30.64/26"
+          source_address_prefixes      = null
+          destination_address_prefixes = null
+        }
       }
     }
   }

@@ -49,6 +49,7 @@ module "subnet" {
   vnet_name          = module.virtual_network.name
   vnet_rg_name       = module.rg.name
   delegation_details = each.value.delegation_details
+  nsgrules           = each.value.nsgrules
 }
 
 resource "azurerm_private_dns_zone" "private_dns_zone" {
