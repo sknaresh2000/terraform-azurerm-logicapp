@@ -45,7 +45,7 @@ module "subnet" {
 
 resource "azurerm_private_dns_zone" "private_dns_zone" {
   for_each            = local.private_dns_zone_info
-  name                = each.value.name
+  name                = each.value.dns_zone_name
   resource_group_name = module.rg.name
 }
 
