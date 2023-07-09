@@ -46,13 +46,13 @@ module "subnet" {
 resource "azurerm_private_dns_zone" "private_dns_zone" {
   for_each            = local.private_dns_zone_info
   name                = each.value.name
-  resource_group_name = var.rg_name
+  resource_group_name = module.rg.name
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
   for_each              = local.private_dns_zone_info
   name                  = "vnet-${each.value.name}-link"
-  resource_group_name   = var.rg_name
+  resource_group_name   = module.rg.name
   private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone[each.value].name
   virtual_network_id    = module.virtual_network.id
 }
