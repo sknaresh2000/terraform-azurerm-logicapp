@@ -20,7 +20,7 @@ module "logicapp" {
   rg_name                    = module.rg.name
   private_endpoint_subnet_id = module.subnet["pe"].id
   logic_app_subnet_id        = module.subnet["logicapp"].id
-  private_dns_zone_info      = local.private_dns_zone_info
+  private_dns_zone_info      = { for k, v in local.private_dns_zone_info : k => merge(v, {dns_zone_ids = azurerm_private_dns_zone.private_dns_zone[v.dns_zone_name].id }) } 
 }
 
 module "virtual_network" {
@@ -61,23 +61,18 @@ locals {
   private_dns_zone_info = {
     blob = {
       dns_zone_name = "privatelink.blob.core.windows.net"
-      dns_zone_ids  = azurerm_private_dns_zone.private_dns_zone["privatelink.blob.core.windows.net"].id
     }
     file = {
       dns_zone_name = "privatelink.file.core.windows.net"
-      dns_zone_ids  = azurerm_private_dns_zone.private_dns_zone["privatelink.file.core.windows.net"].id
     }
     queue = {
       dns_zone_name = "privatelink.queue.core.windows.net"
-      dns_zone_ids  = azurerm_private_dns_zone.private_dns_zone["privatelink.queue.core.windows.net"].id
     }
     table = {
       dns_zone_name = "privatelink.table.core.windows.net"
-      dns_zone_ids  = azurerm_private_dns_zone.private_dns_zone["privatelink.table.core.windows.net"].id
     }
     sites = {
       dns_zone_name = "privatelink.azurewebsites.net"
-      dns_zone_ids  = azurerm_private_dns_zone.private_dns_zone["privatelink.azurewebsites.net"].id
     }
   }
 }
